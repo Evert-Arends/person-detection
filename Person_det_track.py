@@ -7,8 +7,9 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 import glob
-from moviepy.editor import VideoFileClip
+# from moviepy.editor import VideoFileClip
 from imutils.video import FPS
+
 from collections import deque
 from sklearn.utils.linear_assignment_ import linear_assignment
 
@@ -20,14 +21,14 @@ import cv2
 # Global variables to be used by funcitons of VideoFileClop
 frame_count = 0  # frame counter
 
-max_age = 15  # no.of consecutive unmatched detection before 
+max_age = 15  # no.of consecutive unmatched detection before
 # a track is deleted
 
 min_hits = 1  # no. of consecutive matches needed to establish a track
 
 tracker_list = []  # list for trackers
 # list for track ID
-track_id_list = deque(['1', '2', '3', '4', '5', '6', '7', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17'])
+track_id_list = deque(['1', '2', '3', '4', '5', '6', '7', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26'])
 
 debug = False
 
@@ -62,8 +63,8 @@ def assign_detections_to_trackers(trackers, detections, iou_thrd=0.2):
 
     matches = []
 
-    # For creating trackers we consider any detection with an 
-    # overlap less than iou_thrd to signifiy the existence of 
+    # For creating trackers we consider any detection with an
+    # overlap less than iou_thrd to signifiy the existence of
     # an untracked object
 
     for m in matched_idx:
@@ -119,7 +120,7 @@ def pipeline(img):
         print('unmatched_det:', unmatched_dets)
         print('unmatched_trks:', unmatched_trks)
 
-    # Deal with matched detections     
+    # Deal with matched detections
     if matched.size > 0:
         for trk_idx, det_idx in matched:
             z = z_box[det_idx]
@@ -132,7 +133,7 @@ def pipeline(img):
             tmp_trk.box = xx
             tmp_trk.hits += 1
 
-    # Deal with unmatched detections      
+    # Deal with unmatched detections
     if len(unmatched_dets) > 0:
         for idx in unmatched_dets:
             z = z_box[idx]
@@ -151,11 +152,11 @@ def pipeline(img):
             except IndexError as e:
                 tmp_trk.id = 404 # assign an ID for the tracker
 
-            print(tmp_trk.id)
+            # print(tmp_trk.id)
             tracker_list.append(tmp_trk)
             x_box.append(xx)
 
-    # Deal with unmatched tracks       
+    # Deal with unmatched tracks
     if len(unmatched_trks) > 0:
         for trk_idx in unmatched_trks:
             tmp_trk = tracker_list[trk_idx]
@@ -167,7 +168,7 @@ def pipeline(img):
             tmp_trk.box = xx
             x_box[trk_idx] = xx
 
-    # The list of tracks to be annotated  
+    # The list of tracks to be annotated
     good_tracker_list = []
     for trk in tracker_list:
         if ((trk.hits >= min_hits) and (trk.no_losses <= max_age)):
@@ -215,7 +216,7 @@ if __name__ == "__main__":
         # clip = clip1.fl_image(pipeline)
         # clip.write_videofile(output, audio=False)
         # end  = time.time()
-        cap = cv2.VideoCapture(0)
+        cap = cv2.VideoCapture(5)
         fourcc = cv2.VideoWriter_fourcc(*'XVID')
         out = cv2.VideoWriter('output.avi', fourcc, 8.0, (640, 480))
         fps = FPS().start()
@@ -235,4 +236,4 @@ if __name__ == "__main__":
         fps.stop()
         print('INFO: elapsed time: {:2f}'.format(fps.elapsed()))
         print('INFO: FPS: {:2f}'.format(fps.fps()))
-        print(round(end - start, 2), 'Seconds to finish')
+        # print(round(end - start, 2), 'Seconds to finish')
